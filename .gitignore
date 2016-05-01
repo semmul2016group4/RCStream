@@ -1,1 +1,8 @@
 target
+
+# ignore all IntelliJ files
+*.iml
+/.idea
+
+# ignore log files
+/log/

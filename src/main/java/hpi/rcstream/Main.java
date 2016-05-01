@@ -13,7 +13,7 @@ public class Main {
 
         logger.debug("Hello.");
 
-        RCStream rc = new RCStream("nds.wikipedia.org");
+        RCStream rc = new RCStream("en.wikipedia.org");
         rc.start();
     }
 }
