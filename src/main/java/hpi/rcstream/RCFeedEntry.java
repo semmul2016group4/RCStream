@@ -1,13 +1,12 @@
 package hpi.rcstream;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.ObjectIdGenerator;
 
 /**
  * Created by magnus on 19.04.16.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RCFeedEntry {
+class RCFeedEntry {
 
     public class Revision {
         public String _old;
@@ -43,6 +42,6 @@ public class RCFeedEntry {
 
     @Override
     public String toString() {
-        return type.toUpperCase() + " " + id + ": " + title + " " + user + (bot?"(bot) ":" ");
+        return type.toUpperCase() + " " + id + ": " + title + " " + user + (bot ? "(bot) " : " ");
     }
 }

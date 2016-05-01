@@ -1,6 +1,5 @@
 package hpi.rcstream;
 
-import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonElement;
 import io.socket.IOAcknowledge;
@@ -16,8 +15,6 @@ import java.sql.*;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by magnus on 19.04.16.
@@ -44,7 +41,7 @@ public class RCStream implements IOCallback {
             String password = System.getenv("mysqlpw");
             connection = DriverManager.getConnection(
                     "jdbc:mysql://" + host, username, password);
-            assert(connection != null);
+            assert (connection != null);
         } catch (MalformedURLException e) {
             logger.error(e.getLocalizedMessage(), e);
         } catch (SQLException e) {
@@ -52,7 +49,7 @@ public class RCStream implements IOCallback {
         }
     }
 
-    public void start() {
+    void start() {
         socket.connect(this);
     }
 
@@ -88,20 +85,20 @@ public class RCStream implements IOCallback {
 
     private void save(RCFeedEntry entry) {
         try {
-                saveFullInformationSet(entry);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            saveFullInformationSet(entry);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private void saveFullInformationSet(RCFeedEntry entry) throws SQLException {
         PreparedStatement insert = connection.prepareStatement(
                 "INSERT INTO SEMMUL.RCSTREAMFULL(ID, TYPE, NAMESPACE, TITLE, " +
-                "COMMENT, TIMESTAMP, USER, BOT, SERVER_URL, SERVER_NAME, " +
-                "SERVER_SCRIPT_PATH, WIKI, MINOR, PATROLLED, LENGTH_OLD," +
-                "LENGTH_NEW, REVISION_OLD, REVISION_NEW, LOG_ID, LOG_TYPE, " +
-                "LOG_ACTION, LOG_PARAMS, LOG_ACTION_COMMENT)" +
-                "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+                        "COMMENT, TIMESTAMP, USER, BOT, SERVER_URL, SERVER_NAME, " +
+                        "SERVER_SCRIPT_PATH, WIKI, MINOR, PATROLLED, LENGTH_OLD," +
+                        "LENGTH_NEW, REVISION_OLD, REVISION_NEW, LOG_ID, LOG_TYPE, " +
+                        "LOG_ACTION, LOG_PARAMS, LOG_ACTION_COMMENT)" +
+                        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
         );
         insert.setString(1, String.valueOf(entry.id));
         insert.setString(2, entry.type);
@@ -109,7 +106,7 @@ public class RCStream implements IOCallback {
         insert.setString(4, entry.title);
         insert.setString(5, entry.comment);
         insert.setLong(6, entry.timestamp);
-        insert.setString(7,entry.user);
+        insert.setString(7, entry.user);
         insert.setBoolean(8, entry.bot);
         insert.setString(9, entry.server_url);
         insert.setString(10, entry.server_name);
@@ -117,16 +114,22 @@ public class RCStream implements IOCallback {
         insert.setString(12, entry.wiki);
         setPrimitive(insert, 13, entry.minor, Types.BOOLEAN);
         setPrimitive(insert, 14, entry.patrolled, Types.BOOLEAN);
-        if(entry.length != null){
-            HashMap<String, Integer> length = (HashMap<String,Integer>) entry.length;
+        if (entry.length != null) {
+            HashMap<String, Integer> length = (HashMap<String, Integer>) entry.length;
             setPrimitive(insert, 15, length.get("old"), Types.INTEGER);
             insert.setInt(16, length.get("new"));
-        } else {insert.setNull(15, Types.INTEGER); insert.setNull(16, Types.INTEGER);}
-        if(entry.revision != null){
-            HashMap<String,Integer> revision = (HashMap<String,Integer>) entry.revision;
+        } else {
+            insert.setNull(15, Types.INTEGER);
+            insert.setNull(16, Types.INTEGER);
+        }
+        if (entry.revision != null) {
+            HashMap<String, Integer> revision = (HashMap<String, Integer>) entry.revision;
             setPrimitive(insert, 17, revision.get("old"), Types.INTEGER);
             insert.setInt(18, revision.get("new"));
-        } else {insert.setNull(17, Types.INTEGER); insert.setNull(18, Types.INTEGER);}
+        } else {
+            insert.setNull(17, Types.INTEGER);
+            insert.setNull(18, Types.INTEGER);
+        }
         insert.setInt(19, entry.log_id);
         insert.setString(20, entry.log_type);
         insert.setString(21, entry.log_action);
@@ -136,15 +139,22 @@ public class RCStream implements IOCallback {
     }
 
     private void setPrimitive(PreparedStatement stmt, int position, Object value, int sqlType) throws SQLException {
-        if(value != null){
-            switch (sqlType){
-                case Types.BOOLEAN: {stmt.setBoolean(position, (Boolean) value); break;}
-                case Types.INTEGER: {stmt.setInt(position, (Integer) value); break;}
+        if (value != null) {
+            switch (sqlType) {
+                case Types.BOOLEAN: {
+                    stmt.setBoolean(position, (Boolean) value);
+                    break;
+                }
+                case Types.INTEGER: {
+                    stmt.setInt(position, (Integer) value);
+                    break;
+                }
             }
-        } else{ stmt.setNull(position, sqlType);}
+        } else {
+            stmt.setNull(position, sqlType);
+        }
     }
 
-    
 
     public void onError(SocketIOException e) {
         logger.error(e.getLocalizedMessage(), e);
